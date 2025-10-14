@@ -1,0 +1,21 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield background -->
+  <path d="M20 10 C20 5, 25 2, 30 2 L170 2 C175 2, 180 5, 180 10 L180 45 C180 50, 175 53, 170 53 L30 53 C25 53, 20 50, 20 45 Z" fill="#001F3F" stroke="#F5F5F5" stroke-width="2"/>
+  
+  <!-- Pen nib icon -->
+  <g transform="translate(95, 20)">
+    <!-- Pen body -->
+    <path d="M-8 0 L-6 -8 L6 -8 L8 0 L6 8 L-6 8 Z" fill="#F5F5F5"/>
+    <!-- Pen slit -->
+    <path d="M0 -8 L0 8" stroke="#001F3F" stroke-width="1"/>
+    <!-- Pen tip -->
+    <path d="M-6 8 L0 15 L6 8" fill="#F5F5F5"/>
+  </g>
+  
+  <!-- Company name -->
+  <text x="100" y="40" text-anchor="middle" fill="#F5F5F5" font-family="Playfair Display, serif" font-size="14" font-weight="600">The Academics Club</text>
+</svg>
+
+
+
+
