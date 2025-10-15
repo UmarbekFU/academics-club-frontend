@@ -3,7 +3,6 @@ import Universities from '@/components/Universities';
 import About from '@/components/About';
 import Programs from '@/components/Programs';
 import Newsletter from '@/components/Newsletter';
-import Contact from '@/components/Contact';
 
 export default function Home() {
   return (
@@ -13,7 +12,6 @@ export default function Home() {
       <About />
       <Programs />
       <Newsletter />
-      <Contact />
     </div>
   );
 }

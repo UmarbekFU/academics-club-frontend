@@ -3,6 +3,28 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Brand Colors - The Academics Club */
+  --primary-navy: #002445;
+  --primary-navy-light: #003d5c;
+  --primary-navy-dark: #001829;
+  
+  /* Accent Colors */
+  --accent-gold: #D4AF37;
+  --accent-gold-light: #E5C158;
+  --accent-coral: #FF6B6B;
+  --accent-coral-light: #FF8585;
+  --accent-teal: #00B4D8;
+  --accent-teal-light: #33C4E0;
+  
+  /* Neutral Colors */
+  --neutral-cream: #F8F5F0;
+  --text-charcoal: #2D3748;
+  --text-gray: #4A5568;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--primary-navy) 0%, var(--primary-navy-light) 50%, var(--accent-teal) 100%);
+  --gradient-gold: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-light) 100%);
 }
 
 @theme inline {
