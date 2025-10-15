@@ -185,7 +185,7 @@ export default function EssaysProgramPage() {
           <div className="mb-16">
             <div className="text-center mb-12">
               <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-6">
-                What You'll Get
+                What You&apos;ll Get
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -297,10 +297,10 @@ export default function EssaysProgramPage() {
         <div className="max-w-6xl mx-auto px-6 sm:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-6">
-              What You'll Achieve
+              What You&apos;ll Achieve
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Create essays that truly represent who you are and capture admissions officers' attention
+              Create essays that truly represent who you are and capture admissions officers&apos; attention
             </p>
           </div>
 

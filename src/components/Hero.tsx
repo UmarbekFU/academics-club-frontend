@@ -8,10 +8,7 @@ const HeroNew = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#002445] via-[#003d5c] to-[#00B4D8]">
       {/* Animated background pattern */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
-          backgroundSize: '40px 40px'
-        }} />
+        <div className="absolute inset-0 dot-pattern" />
       </div>
 
       {/* Gradient overlay */}
@@ -38,7 +35,7 @@ const HeroNew = () => {
             </h1>
             
             <p className="text-xl sm:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
-              Get personalized coaching to craft authentic essays that make admissions officers say "yes"
+              Get personalized coaching to craft authentic essays that make admissions officers say &quot;yes&quot;
             </p>
           </div>
 

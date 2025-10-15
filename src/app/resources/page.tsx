@@ -234,7 +234,7 @@ export default function ResourcesPage() {
             <div className="bg-white p-6 rounded-xl border border-gray-200">
               <div className="text-4xl font-black text-[#002445] mb-2">No Fluff</div>
               <p className="text-gray-600">
-                Only practical tips you won't find anywhere else
+                Only practical tips you won&apos;t find anywhere else
               </p>
             </div>
           </div>
@@ -269,4 +269,5 @@ export default function ResourcesPage() {
     </div>
   );
 }
+
 

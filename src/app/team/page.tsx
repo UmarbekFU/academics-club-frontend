@@ -7,6 +7,18 @@ export const metadata = {
   description: 'Meet our experienced team of admissions experts, writing coaches, and mentors dedicated to your success.',
 };
 
+const getColorClass = (color: string) => {
+  const colorMap: Record<string, string> = {
+    '#FF6B6B': 'bg-coral',
+    '#D4AF37': 'bg-gold',
+    '#00B4D8': 'bg-teal',
+    '#002445': 'bg-navy',
+    '#9333EA': 'bg-purple',
+    '#10B981': 'bg-green'
+  };
+  return colorMap[color] || 'bg-gray-500';
+};
+
 export default function TeamPage() {
   const teamMembers = [
     {
@@ -132,8 +144,7 @@ export default function TeamPage() {
               return (
                 <div key={index} className="text-center group">
                   <div 
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg"
-                    style={{ backgroundColor: colors[index] }}
+                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg ${getColorClass(colors[index])}`}
                   >
                     <IconComponent className="h-8 w-8 text-white" />
                   </div>
@@ -183,8 +194,7 @@ export default function TeamPage() {
                     <p className="text-gray-200 font-medium">{member.role}</p>
                   </div>
                   <div 
-                    className="absolute top-4 right-4 w-3 h-3 rounded-full"
-                    style={{ backgroundColor: member.color }}
+                    className={`absolute top-4 right-4 w-3 h-3 rounded-full ${getColorClass(member.color)}`}
                   ></div>
                 </div>
 
@@ -200,8 +210,7 @@ export default function TeamPage() {
                       {member.expertise.map((skill, skillIndex) => (
                         <span
                           key={skillIndex}
-                          className="px-3 py-1.5 rounded-lg text-sm font-medium text-white"
-                          style={{ backgroundColor: member.color }}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium text-white ${getColorClass(member.color)}`}
                         >
                           {skill}
                         </span>
@@ -259,8 +268,7 @@ export default function TeamPage() {
                   className="bg-gray-50 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#002445] group"
                 >
                   <div 
-                    className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg"
-                    style={{ backgroundColor: reason.color }}
+                    className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg ${getColorClass(reason.color)}`}
                   >
                     <IconComponent className="h-8 w-8 text-white" />
                   </div>

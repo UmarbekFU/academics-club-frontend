@@ -7,6 +7,18 @@ export const metadata = {
   description: 'Build strong writing skills for academic and personal success with our comprehensive 6-week Writing Program.',
 };
 
+const getColorClass = (color: string) => {
+  const colorMap: Record<string, string> = {
+    '#FF6B6B': 'bg-coral',
+    '#D4AF37': 'bg-gold',
+    '#00B4D8': 'bg-teal',
+    '#002445': 'bg-navy',
+    '#9333EA': 'bg-purple',
+    '#10B981': 'bg-green'
+  };
+  return colorMap[color] || 'bg-gray-500';
+};
+
 export default function WritingProgramPage() {
   const features = [
     'Small group sessions (max 8 students)',
@@ -216,7 +228,7 @@ export default function WritingProgramPage() {
             </div>
 
             <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-6">
-              What You'll Get
+              What You&apos;ll Get
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Comprehensive support and resources to master writing skills
@@ -262,8 +274,7 @@ export default function WritingProgramPage() {
               >
                 <div className="text-center mb-6">
                   <div 
-                    className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg"
-                    style={{ backgroundColor: week.color }}
+                    className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg ${getColorClass(week.color)}`}
                   >
                     <span className="text-white font-black text-xl">{week.week}</span>
                   </div>
@@ -273,8 +284,7 @@ export default function WritingProgramPage() {
                   {week.topics.map((topic, topicIndex) => (
                     <li key={topicIndex} className="flex items-start gap-2">
                       <div 
-                        className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0"
-                        style={{ backgroundColor: week.color }}
+                        className={`w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 ${getColorClass(week.color)}`}
                       ></div>
                       <span className="text-gray-600 text-sm leading-relaxed">{topic}</span>
                     </li>
@@ -321,8 +331,7 @@ export default function WritingProgramPage() {
                       />
                     </div>
                     <div 
-                      className="absolute -bottom-2 -right-2 w-6 h-6 rounded-full border-4 border-[#002445]"
-                      style={{ backgroundColor: instructor.color }}
+                      className={`absolute -bottom-2 -right-2 w-6 h-6 rounded-full border-4 border-[#002445] ${getColorClass(instructor.color)}`}
                     ></div>
                   </div>
                   <div>
@@ -351,10 +360,10 @@ export default function WritingProgramPage() {
             </div>
 
             <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-6">
-              What You'll Achieve
+              What You&apos;ll Achieve
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              By the end of this program, you'll have the writing skills and confidence needed for academic success
+              By the end of this program, you&apos;ll have the writing skills and confidence needed for academic success
             </p>
           </div>
 
@@ -367,8 +376,7 @@ export default function WritingProgramPage() {
                   className="text-center bg-gray-50 rounded-2xl p-8 hover:shadow-xl transition-all border-2 border-transparent hover:border-[#002445] group"
                 >
                   <div 
-                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg"
-                    style={{ backgroundColor: outcome.color }}
+                    className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg ${getColorClass(outcome.color)}`}
                   >
                     <IconComponent className="h-8 w-8 text-white" />
                   </div>

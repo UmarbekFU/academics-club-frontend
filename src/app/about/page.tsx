@@ -7,6 +7,18 @@ export const metadata = {
   description: 'Learn about The Academics Club\'s mission to help students master writing and storytelling for college admissions success.',
 };
 
+const getColorClass = (color: string) => {
+  const colorMap: Record<string, string> = {
+    '#FF6B6B': 'bg-coral',
+    '#D4AF37': 'bg-gold',
+    '#00B4D8': 'bg-teal',
+    '#002445': 'bg-navy',
+    '#9333EA': 'bg-purple',
+    '#10B981': 'bg-green'
+  };
+  return colorMap[color] || 'bg-gray-500';
+};
+
 export default function AboutPage() {
   const values = [
     {
@@ -178,8 +190,7 @@ export default function AboutPage() {
                   className="bg-gray-50 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#002445] group"
                 >
                   <div 
-                    className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg"
-                    style={{ backgroundColor: value.color }}
+                    className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg ${getColorClass(value.color)}`}
                   >
                     <IconComponent className="h-8 w-8 text-white" />
                   </div>

@@ -46,3 +46,42 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Utility Classes */
+.dot-pattern {
+  background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+.smooth-scroll {
+  scroll-behavior: auto;
+}
+
+.no-grayscale {
+  filter: grayscale(0);
+}
+
+/* Dynamic Color Backgrounds */
+.bg-coral {
+  background-color: #FF6B6B;
+}
+
+.bg-gold {
+  background-color: #D4AF37;
+}
+
+.bg-teal {
+  background-color: #00B4D8;
+}
+
+.bg-navy {
+  background-color: #002445;
+}
+
+.bg-purple {
+  background-color: #9333EA;
+}
+
+.bg-green {
+  background-color: #10B981;
+}

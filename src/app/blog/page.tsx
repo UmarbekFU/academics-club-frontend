@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowRight, Tag } from 'lucide-react';
+import { Calendar, User, ArrowRight } from 'lucide-react';
 
 export const metadata = {
   title: 'Blog - The Academics Club',

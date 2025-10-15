@@ -117,11 +117,7 @@ const Universities = () => {
           {/* Scrolling Content */}
           <div 
             ref={scrollRef}
-            className="flex gap-12 overflow-x-hidden"
-            style={{ 
-              scrollBehavior: 'auto',
-              WebkitOverflowScrolling: 'touch'
-            }}
+            className="flex gap-12 overflow-x-hidden smooth-scroll"
           >
             {duplicatedUniversities.map((university, index) => (
               <div
@@ -129,10 +125,7 @@ const Universities = () => {
                 className="flex-shrink-0 flex items-center justify-center group"
               >
                 <div 
-                  className="relative w-24 h-24 transition-all duration-300 hover:scale-110"
-                  style={{
-                    filter: 'grayscale(0)',
-                  }}
+                  className="relative w-24 h-24 transition-all duration-300 hover:scale-110 no-grayscale"
                 >
                   <Image
                     src={university.logo}
