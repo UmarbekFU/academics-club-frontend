@@ -15,11 +15,12 @@ const updateBlogPostSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params
     const blogPost = await prisma.blogPost.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       include: {
         author: {
           select: {
@@ -58,9 +59,10 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params
     const body = await request.json()
     const validatedData = updateBlogPostSchema.parse(body)
     
@@ -70,7 +72,7 @@ export async function PATCH(
         where: { slug: validatedData.slug },
       })
       
-      if (existingPost && existingPost.slug !== params.slug) {
+      if (existingPost && existingPost.slug !== slug) {
         return NextResponse.json(
           { 
             success: false, 
@@ -82,7 +84,7 @@ export async function PATCH(
     }
     
     const blogPost = await prisma.blogPost.update({
-      where: { slug: params.slug },
+      where: { slug },
       data: validatedData,
       include: {
         author: {
@@ -126,11 +128,12 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params
     await prisma.blogPost.delete({
-      where: { slug: params.slug },
+      where: { slug },
     })
     
     return NextResponse.json({
