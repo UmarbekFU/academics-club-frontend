@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { adminApi } from '@/lib/api';
 
