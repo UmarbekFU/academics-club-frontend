@@ -105,25 +105,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Webpack optimizations
-  webpack: (config, { dev, isServer }) => {
-    // Optimize bundle size
-    if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-          },
-        },
-      };
-    }
-
-    return config;
-  },
-
   // ESLint configuration
   eslint: {
     ignoreDuringBuilds: true,
@@ -134,8 +115,11 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
 
-  // Output configuration
+  // Output configuration for Vercel
   output: 'standalone',
+  
+  // Server-side runtime configuration
+  serverExternalPackages: ['@prisma/client', 'bcryptjs'],
 };
 
 export default nextConfig;
