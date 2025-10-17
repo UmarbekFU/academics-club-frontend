@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowLeft, Clock, Share2, BookOpen } from 'lucide-react';
+import { Calendar, User, ArrowLeft, Clock, BookOpen } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
+import ShareButton from '@/components/ShareButton';
 
 interface BlogPost {
   id: string;
@@ -104,24 +105,6 @@ export default async function BlogDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const handleShare = async () => {
-    if (typeof window !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({
-          title: blogPost.title,
-          text: blogPost.excerpt || '',
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else if (typeof window !== 'undefined') {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      // You could show a toast notification here
-    }
-  };
-
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -183,13 +166,11 @@ export default async function BlogDetailPage({ params }: PageProps) {
               </div>
             </div>
             
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <Share2 className="w-4 h-4" />
-              <span>Share</span>
-            </button>
+            <ShareButton
+              title={blogPost.title}
+              text={blogPost.excerpt || ''}
+              url={`/blog/${blogPost.slug}`}
+            />
           </div>
         </div>
       </div>
