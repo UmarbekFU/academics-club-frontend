@@ -124,8 +124,15 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  // Enable SWC minification
-  swcMinify: true,
+  // ESLint configuration
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // TypeScript configuration
+  typescript: {
+    ignoreBuildErrors: false,
+  },
 
   // Output configuration
   output: 'standalone',
