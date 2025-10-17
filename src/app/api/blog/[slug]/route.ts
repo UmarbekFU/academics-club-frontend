@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { ApiErrorHandler } from '@/lib/error-handler'
 
 const updateBlogPostSchema = z.object({
   title: z.string().min(1).optional(),
@@ -35,25 +36,12 @@ export async function GET(
     })
     
     if (!blogPost) {
-      return NextResponse.json(
-        { success: false, message: 'Blog post not found' },
-        { status: 404 }
-      )
+      return ApiErrorHandler.notFound('Blog post not found')
     }
     
-    return NextResponse.json({
-      success: true,
-      data: blogPost,
-    })
+    return ApiErrorHandler.success(blogPost, 'Blog post retrieved successfully')
   } catch (error) {
-    console.error('Get blog post error:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
+    return ApiErrorHandler.handle(error)
   }
 }
 
@@ -73,13 +61,7 @@ export async function PATCH(
       })
       
       if (existingPost && existingPost.slug !== slug) {
-        return NextResponse.json(
-          { 
-            success: false, 
-            message: 'A blog post with this slug already exists' 
-          },
-          { status: 400 }
-        )
+        return ApiErrorHandler.badRequest('A blog post with this slug already exists')
       }
     }
     
@@ -98,31 +80,9 @@ export async function PATCH(
       },
     })
     
-    return NextResponse.json({
-      success: true,
-      message: 'Blog post updated successfully',
-      data: blogPost,
-    })
+    return ApiErrorHandler.success(blogPost, 'Blog post updated successfully')
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Validation error',
-          errors: error.issues 
-        },
-        { status: 400 }
-      )
-    }
-    
-    console.error('Update blog post error:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
+    return ApiErrorHandler.handle(error)
   }
 }
 
@@ -136,19 +96,9 @@ export async function DELETE(
       where: { slug },
     })
     
-    return NextResponse.json({
-      success: true,
-      message: 'Blog post deleted successfully',
-    })
+    return ApiErrorHandler.success(null, 'Blog post deleted successfully')
   } catch (error) {
-    console.error('Delete blog post error:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
+    return ApiErrorHandler.handle(error)
   }
 }
 

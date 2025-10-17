@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { ApiErrorHandler } from '@/lib/error-handler'
+
+// Cache for blog posts (5 minutes)
+const blogCache = new Map<string, { data: any; timestamp: number }>()
+const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+function getCachedData(key: string) {
+  const cached = blogCache.get(key)
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data
+  }
+  return null
+}
+
+function setCachedData(key: string, data: any) {
+  blogCache.set(key, { data, timestamp: Date.now() })
+}
+
+function invalidateCache() {
+  blogCache.clear()
+}
 
 const blogPostSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -24,13 +45,7 @@ export async function POST(request: NextRequest) {
     })
     
     if (existingPost) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'A blog post with this slug already exists' 
-        },
-        { status: 400 }
-      )
+      return ApiErrorHandler.badRequest('A blog post with this slug already exists')
     }
     
     const blogPost = await prisma.blogPost.create({
@@ -47,34 +62,12 @@ export async function POST(request: NextRequest) {
       },
     })
     
-    return NextResponse.json(
-      { 
-        success: true, 
-        message: 'Blog post created successfully',
-        data: blogPost
-      },
-      { status: 201 }
-    )
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Validation error',
-          errors: error.issues 
-        },
-        { status: 400 }
-      )
-    }
+    // Invalidate cache when new post is created
+    invalidateCache()
     
-    console.error('Create blog post error:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
+    return ApiErrorHandler.created(blogPost, 'Blog post created successfully')
+  } catch (error) {
+    return ApiErrorHandler.handle(error)
   }
 }
 
@@ -86,6 +79,21 @@ export async function GET(request: NextRequest) {
     const published = searchParams.get('published')
     const featured = searchParams.get('featured')
     const tag = searchParams.get('tag')
+    
+    // Create cache key
+    const cacheKey = `blog-${page}-${limit}-${published}-${featured}-${tag}`
+    
+    // Check cache first
+    const cachedData = getCachedData(cacheKey)
+    if (cachedData) {
+      return NextResponse.json(cachedData, {
+        status: 200,
+        headers: {
+          'Cache-Control': 'public, max-age=300, s-maxage=300',
+          'X-Cache': 'HIT'
+        }
+      })
+    }
     
     const skip = (page - 1) * limit
     
@@ -122,25 +130,28 @@ export async function GET(request: NextRequest) {
       prisma.blogPost.count({ where }),
     ])
     
-    return NextResponse.json({
-      success: true,
-      data: blogPosts,
+    const result = {
+      posts: blogPosts,
       pagination: {
         page,
         limit,
         total,
         pages: Math.ceil(total / limit),
       },
+    }
+    
+    // Cache the result
+    setCachedData(cacheKey, result)
+    
+    return NextResponse.json(result, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'public, max-age=300, s-maxage=300',
+        'X-Cache': 'MISS'
+      }
     })
   } catch (error) {
-    console.error('Get blog posts error:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
+    return ApiErrorHandler.handle(error)
   }
 }
 

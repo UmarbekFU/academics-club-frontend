@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 // Type definitions
 interface ApplicationData {
@@ -32,21 +32,11 @@ const api = axios.create({
   },
 });
 
-// Add auth token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('admin_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 // Handle auth errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('admin_token');
       window.location.href = '/admin/login';
     }
     return Promise.reject(error);
@@ -56,40 +46,41 @@ api.interceptors.response.use(
 // Public API calls
 export const publicApi = {
   // Blog
-  getBlogPosts: (params = {}) => api.get('/public/blog', { params }),
-  getBlogPost: (slug: string) => api.get(`/public/blog/${slug}`),
+  getBlogPosts: (params = {}) => api.get('/api/blog', { params }),
+  getBlogPost: (slug: string) => api.get(`/api/blog/${slug}`),
   
   // Applications
-  submitApplication: (data: ApplicationData) => api.post('/auth/applications', data),
+  submitApplication: (data: ApplicationData) => api.post('/api/applications', data),
   
   // Newsletter
-  subscribeNewsletter: (email: string) => api.post('/auth/newsletter', { email }),
+  subscribeNewsletter: (email: string) => api.post('/api/newsletter', { email }),
   
   // Team
-  getTeamMembers: () => api.get('/auth/team'),
+  getTeamMembers: () => api.get('/api/team'),
   
   // Programs
-  getPrograms: () => api.get('/auth/programs'),
+  getPrograms: () => api.get('/api/programs'),
 };
 
 // Admin API calls
 export const adminApi = {
   // Auth
   login: (credentials: { username: string; password: string }) => 
-    api.post('/admin/login', credentials),
+    api.post('/api/admin/login', credentials),
+  logout: () => api.post('/api/admin/logout'),
   
   // Applications
-  getApplications: () => api.get('/admin/applications'),
-  getApplication: (id: string) => api.get(`/admin/applications/${id}`),
+  getApplications: () => api.get('/api/admin/applications'),
+  getApplication: (id: string) => api.get(`/api/admin/applications/${id}`),
   updateApplication: (id: string, data: UpdateApplicationData) => 
-    api.patch(`/admin/applications/${id}`, data),
-  deleteApplication: (id: string) => api.delete(`/admin/applications/${id}`),
+    api.patch(`/api/admin/applications/${id}`, data),
+  deleteApplication: (id: string) => api.delete(`/api/admin/applications/${id}`),
   
   // Blog (admin)
-  createBlogPost: (data: BlogPostData) => api.post('/public/blog', data),
+  createBlogPost: (data: BlogPostData) => api.post('/api/blog', data),
   updateBlogPost: (slug: string, data: BlogPostData) => 
-    api.patch(`/public/blog/${slug}`, data),
-  deleteBlogPost: (slug: string) => api.delete(`/public/blog/${slug}`),
+    api.patch(`/api/blog/${slug}`, data),
+  deleteBlogPost: (slug: string) => api.delete(`/api/blog/${slug}`),
 };
 
 export default api;

@@ -21,6 +21,10 @@ model Application {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([email])
+  @@index([status])
+  @@index([program])
+  @@index([createdAt])
   @@map("applications")
 }
 
@@ -38,6 +42,12 @@ model BlogPost {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([slug])
+  @@index([published])
+  @@index([featured])
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([tags])
   @@map("blog_posts")
 }
 
@@ -51,6 +61,7 @@ model Author {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
+  @@index([email])
   @@map("authors")
 }
 
@@ -63,6 +74,8 @@ model Admin {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([username])
+  @@index([email])
   @@map("admins")
 }
 
@@ -72,7 +85,7 @@ model TeamMember {
   position  String
   bio       String
   image     String?
-  email     String?
+  email     String?  @unique
   linkedin  String?
   twitter   String?
   order     Int      @default(0)
@@ -80,6 +93,9 @@ model TeamMember {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([active])
+  @@index([order])
+  @@index([email])
   @@map("team_members")
 }
 
@@ -97,6 +113,8 @@ model Program {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([slug])
+  @@index([active])
   @@map("programs")
 }
 
@@ -106,5 +124,48 @@ model Newsletter {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
 
+  @@index([email])
+  @@index([active])
+  @@index([createdAt])
   @@map("newsletter")
+}
+
+model Resource {
+  id          String   @id @default(cuid())
+  title       String   @unique
+  description String
+  type        String   // PDF Guide, Templates, Worksheet, Checklist
+  pages       String?  // "25 pages", "15 templates", etc.
+  downloads   Int      @default(0)
+  highlights  String   // JSON string of highlights array
+  fileUrl     String?  // URL to the actual file
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([title])
+  @@index([type])
+  @@index([active])
+  @@index([downloads])
+  @@map("resources")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String
+  resource    String
+  resourceId  String
+  userId      String
+  userType    String   // 'admin' or 'user'
+  details     String   // JSON string
+  ipAddress   String
+  userAgent   String
+  timestamp   DateTime @default(now())
+
+  @@index([action])
+  @@index([resource])
+  @@index([userId])
+  @@index([userType])
+  @@index([timestamp])
+  @@map("audit_logs")
 }

@@ -1,77 +1,112 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, User, ArrowRight } from 'lucide-react';
+import { Calendar, User, ArrowRight, Loader2 } from 'lucide-react';
+import { publicApi } from '@/lib/api';
 
-export const metadata = {
-  title: 'Blog - The Academics Club',
-  description: 'Read our latest insights on college admissions, writing tips, and student success stories.',
-};
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  published: boolean;
+  featured: boolean;
+  tags: string | null;
+  createdAt: string;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string | null;
+  };
+}
+
+interface BlogResponse {
+  success: boolean;
+  data: {
+    posts: BlogPost[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
+  };
+}
 
 export default function BlogPage() {
-  const blogPosts = [
-    {
-      id: 1,
-      title: 'How to Find Your Voice in College Essays',
-      excerpt: 'Discover the key to writing authentic college essays that truly represent who you are. Learn techniques for uncovering your unique voice and perspective.',
-      author: 'David Chen',
-      date: '2024-01-15',
-      category: 'Essay Writing',
-      image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80',
-      readTime: '5 min read'
-    },
-    {
-      id: 2,
-      title: 'Top 5 Writing Mistakes Students Make',
-      excerpt: 'Avoid these common writing pitfalls that can hurt your college applications. Learn how to identify and fix these mistakes before submitting your essays.',
-      author: 'Sarah Johnson',
-      date: '2024-01-10',
-      category: 'Writing Tips',
-      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-      readTime: '7 min read'
-    },
-    {
-      id: 3,
-      title: 'From Draft to Admission: A Student Success Story',
-      excerpt: 'Follow the journey of Maria, who transformed her initial essay draft into a compelling narrative that helped her gain admission to her dream school.',
-      author: 'Anna Williams',
-      date: '2024-01-05',
-      category: 'Success Stories',
-      image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80',
-      readTime: '6 min read'
-    },
-    {
-      id: 4,
-      title: 'Understanding the Common Application Essay Prompts',
-      excerpt: 'A comprehensive guide to the Common Application essay prompts and how to approach each one effectively. Get expert tips for choosing the right prompt for your story.',
-      author: 'Maya Patel',
-      date: '2024-01-01',
-      category: 'Admissions Tips',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
-      readTime: '8 min read'
-    },
-    {
-      id: 5,
-      title: 'Building a Strong Extracurricular Profile',
-      excerpt: 'Learn how to showcase your extracurricular activities effectively in your college applications. Discover what admissions officers are really looking for.',
-      author: 'John Rivera',
-      date: '2023-12-28',
-      category: 'Admissions Tips',
-      image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80',
-      readTime: '6 min read'
-    },
-    {
-      id: 6,
-      title: 'The Art of Storytelling in College Essays',
-      excerpt: 'Master the fundamentals of storytelling to create compelling college essays. Learn narrative techniques that will make your essays memorable and impactful.',
-      author: 'David Chen',
-      date: '2023-12-20',
-      category: 'Essay Writing',
-      image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80',
-      readTime: '9 min read'
-    }
-  ];
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const categories = ['All', 'Essay Writing', 'Writing Tips', 'Admissions Tips', 'Success Stories'];
+
+  useEffect(() => {
+    fetchBlogPosts();
+  }, []);
+
+  const fetchBlogPosts = async (page = 1, category = selectedCategory) => {
+    try {
+      setLoading(page === 1);
+      setLoadingMore(page > 1);
+      
+      const params: Record<string, string> = {
+        page: page.toString(),
+        limit: '6',
+        published: 'true'
+      };
+      
+      if (category !== 'All') {
+        params.tag = category;
+      }
+
+      const response = await publicApi.getBlogPosts(params);
+      const data = response.data as BlogResponse;
+      
+      if (data.success) {
+        if (page === 1) {
+          setBlogPosts(data.data.posts);
+        } else {
+          setBlogPosts(prev => [...prev, ...data.data.posts]);
+        }
+        setCurrentPage(data.data.pagination.page);
+        setTotalPages(data.data.pagination.pages);
+      }
+    } catch (error) {
+      console.error('Error fetching blog posts:', error);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  const handleLoadMore = () => {
+    if (currentPage < totalPages) {
+      fetchBlogPosts(currentPage + 1, selectedCategory);
+    }
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+    fetchBlogPosts(1, category);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span>Loading blog posts...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -96,8 +131,9 @@ export default function BlogPage() {
             {categories.map((category, index) => (
               <button
                 key={index}
+                onClick={() => handleCategoryChange(category)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  index === 0
+                  selectedCategory === category
                     ? 'bg-[#87CEEB] text-[#001F3F]'
                     : 'bg-gray-100 text-gray-600 hover:bg-[#87CEEB] hover:text-[#001F3F]'
                 }`}
@@ -112,68 +148,89 @@ export default function BlogPage() {
       {/* Blog Posts */}
       <section className="py-20 bg-[#F5F5F5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post) => (
-              <article key={post.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                {/* Image */}
-                <div className="relative h-48">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-[#87CEEB] text-[#001F3F] rounded-full text-xs font-medium">
-                      {post.category}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-[#001F3F] mb-3 line-clamp-2">
-                    {post.title}
-                  </h2>
-                  
-                  <p className="text-gray-600 mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
-
-                  {/* Meta */}
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-1">
-                        <User className="h-4 w-4" />
-                        <span>{post.author}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>{new Date(post.date).toLocaleDateString()}</span>
+          {blogPosts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No blog posts available yet.</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {blogPosts.map((post) => (
+                  <article key={post.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    {/* Image */}
+                    <div className="relative h-48">
+                      <Image
+                        src={post.author.avatar || 'https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80'}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <span className="px-3 py-1 bg-[#87CEEB] text-[#001F3F] rounded-full text-xs font-medium">
+                          {post.tags?.split(',')[0] || 'Essay Writing'}
+                        </span>
                       </div>
                     </div>
-                    <span>{post.readTime}</span>
-                  </div>
 
-                  {/* Read More */}
-                  <Link
-                    href={`/blog/${post.id}`}
-                    className="inline-flex items-center space-x-2 text-[#87CEEB] hover:text-[#001F3F] transition-colors duration-200 font-medium"
+                    {/* Content */}
+                    <div className="p-6">
+                      <h2 className="text-xl font-bold text-[#001F3F] mb-3 line-clamp-2">
+                        {post.title}
+                      </h2>
+                      
+                      <p className="text-gray-600 mb-4 line-clamp-3">
+                        {post.excerpt}
+                      </p>
+
+                      {/* Meta */}
+                      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-1">
+                            <User className="h-4 w-4" />
+                            <span>{post.author.name}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="h-4 w-4" />
+                            <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                        <span>5 min read</span>
+                      </div>
+
+                      {/* Read More */}
+                      <Link
+                        href={`/blog/${post.slug}`}
+                        className="inline-flex items-center space-x-2 text-[#87CEEB] hover:text-[#001F3F] transition-colors duration-200 font-medium"
+                      >
+                        <span>Read More</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              {/* Load More */}
+              {currentPage < totalPages && (
+                <div className="text-center mt-12">
+                  <button 
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="bg-[#001F3F] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#002445] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
                   >
-                    <span>Read More</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
+                    {loadingMore ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      'Load More Articles'
+                    )}
+                  </button>
                 </div>
-              </article>
-            ))}
-          </div>
-
-          {/* Load More */}
-          <div className="text-center mt-12">
-            <button className="btn-primary px-8 py-3">
-              Load More Articles
-            </button>
-          </div>
+              )}
+            </>
+          )}
         </div>
       </section>
 
@@ -192,7 +249,7 @@ export default function BlogPage() {
               placeholder="Enter your email"
               className="flex-1 px-4 py-3 rounded-lg text-[#001F3F] focus:outline-none focus:ring-2 focus:ring-[#87CEEB]"
             />
-            <button className="btn-accent px-6 py-3">
+            <button className="bg-[#87CEEB] text-[#001F3F] px-6 py-3 rounded-lg font-semibold hover:bg-[#7BC4E0] transition-colors">
               Subscribe
             </button>
           </div>
@@ -201,7 +258,3 @@ export default function BlogPage() {
     </div>
   );
 }
-
-
-
-

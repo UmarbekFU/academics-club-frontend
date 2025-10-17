@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { ApiErrorHandler } from '@/lib/error-handler'
+import { validateCSRFToken, getCSRFTokenFromRequest, getSessionIdFromRequest } from '@/lib/csrf'
+import { requireAdmin } from '@/lib/auth'
 
 const updateApplicationSchema = z.object({
   status: z.enum(['pending', 'contacted', 'enrolled', 'rejected']).optional(),
@@ -18,25 +21,12 @@ export async function GET(
     })
     
     if (!application) {
-      return NextResponse.json(
-        { success: false, message: 'Application not found' },
-        { status: 404 }
-      )
+      return ApiErrorHandler.notFound('Application not found')
     }
     
-    return NextResponse.json({
-      success: true,
-      data: application,
-    })
+    return ApiErrorHandler.success(application, 'Application retrieved successfully')
   } catch (error) {
-    console.error('Get application error:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
+    return ApiErrorHandler.handle(error)
   }
 }
 
@@ -45,6 +35,17 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Require admin role
+    requireAdmin(request)
+    
+    // CSRF protection for admin operations
+    const sessionId = getSessionIdFromRequest(request)
+    const csrfToken = getCSRFTokenFromRequest(request)
+    
+    if (!csrfToken || !validateCSRFToken(sessionId, csrfToken)) {
+      return ApiErrorHandler.forbidden('Invalid CSRF token')
+    }
+
     const { id } = await params
     const body = await request.json()
     const validatedData = updateApplicationSchema.parse(body)
@@ -54,31 +55,15 @@ export async function PATCH(
       data: validatedData,
     })
     
-    return NextResponse.json({
-      success: true,
-      message: 'Application updated successfully',
-      data: application,
-    })
+    return ApiErrorHandler.success(application, 'Application updated successfully')
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Validation error',
-          errors: error.issues 
-        },
-        { status: 400 }
-      )
+    if (error instanceof Error && error.message === 'Authentication required') {
+      return ApiErrorHandler.unauthorized('Authentication required')
     }
-    
-    console.error('Update application error:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
+    if (error instanceof Error && error.message === 'Insufficient permissions') {
+      return ApiErrorHandler.forbidden('Admin access required')
+    }
+    return ApiErrorHandler.handle(error)
   }
 }
 
@@ -87,24 +72,31 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Require admin role
+    requireAdmin(request)
+    
+    // CSRF protection for admin operations
+    const sessionId = getSessionIdFromRequest(request)
+    const csrfToken = getCSRFTokenFromRequest(request)
+    
+    if (!csrfToken || !validateCSRFToken(sessionId, csrfToken)) {
+      return ApiErrorHandler.forbidden('Invalid CSRF token')
+    }
+
     const { id } = await params
     await prisma.application.delete({
       where: { id },
     })
     
-    return NextResponse.json({
-      success: true,
-      message: 'Application deleted successfully',
-    })
+    return ApiErrorHandler.success(null, 'Application deleted successfully')
   } catch (error) {
-    console.error('Delete application error:', error)
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
+    if (error instanceof Error && error.message === 'Authentication required') {
+      return ApiErrorHandler.unauthorized('Authentication required')
+    }
+    if (error instanceof Error && error.message === 'Insufficient permissions') {
+      return ApiErrorHandler.forbidden('Admin access required')
+    }
+    return ApiErrorHandler.handle(error)
   }
 }
 
