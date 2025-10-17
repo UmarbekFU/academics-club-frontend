@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET: string = process.env.JWT_SECRET || 'build-time-placeholder'
 
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required')
+function getJWTSecret(): string {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required')
+  }
+  return process.env.JWT_SECRET
 }
 
 export interface JWTPayload {
@@ -15,7 +18,7 @@ export interface JWTPayload {
 }
 
 export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { 
+  return jwt.sign(payload, getJWTSecret(), { 
     expiresIn: '24h',
     issuer: 'academics-club',
     audience: 'admin',
@@ -25,7 +28,7 @@ export function generateToken(payload: JWTPayload): string {
 
 export function verifyToken(token: string): JWTPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET, {
+    return jwt.verify(token, getJWTSecret(), {
       issuer: 'academics-club',
       audience: 'admin',
       algorithms: ['HS256']

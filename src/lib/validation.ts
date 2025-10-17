@@ -12,15 +12,15 @@ export const applicationSchema = z.object({
     .max(255, 'Email must be less than 255 characters')
     .toLowerCase(),
   phone: z.string()
-    .optional()
-    .refine((val) => !val || /^[\+]?[1-9][\d]{0,15}$/.test(val), 'Invalid phone number format'),
+    .refine((val) => !val || /^[\+]?[1-9][\d]{0,15}$/.test(val), 'Invalid phone number format')
+    .optional(),
   program: z.enum(['writing-program', 'essays-program', 'both', 'consultation'], {
-    errorMap: () => ({ message: 'Please select a valid program' })
+    message: 'Please select a valid program'
   }),
   message: z.string()
-    .optional()
     .max(1000, 'Message must be less than 1000 characters')
     .refine((val) => !val || val.trim().length > 0, 'Message cannot be empty or only whitespace')
+    .optional()
 })
 
 export const newsletterSchema = z.object({
@@ -50,14 +50,14 @@ export const blogPostSchema = z.object({
     .max(50000, 'Content must be less than 50,000 characters')
     .refine((val) => val.trim().length > 0, 'Content cannot be empty or only whitespace'),
   excerpt: z.string()
-    .optional()
-    .max(500, 'Excerpt must be less than 500 characters'),
+    .max(500, 'Excerpt must be less than 500 characters')
+    .optional(),
   published: z.boolean().default(false),
   featured: z.boolean().default(false),
   tags: z.string()
-    .optional()
     .max(200, 'Tags must be less than 200 characters')
-    .refine((val) => !val || val.split(',').every(tag => tag.trim().length > 0), 'All tags must be non-empty'),
+    .refine((val) => !val || val.split(',').every(tag => tag.trim().length > 0), 'All tags must be non-empty')
+    .optional(),
   authorId: z.string()
     .min(1, 'Author ID is required')
     .regex(/^[a-zA-Z0-9_-]+$/, 'Invalid author ID format')
@@ -108,12 +108,12 @@ export const loginSchema = z.object({
 
 export const updateApplicationSchema = z.object({
   status: z.enum(['pending', 'contacted', 'enrolled', 'rejected'], {
-    errorMap: () => ({ message: 'Invalid status value' })
+    message: 'Invalid status value'
   }).optional(),
   message: z.string()
-    .optional()
     .max(1000, 'Message must be less than 1000 characters')
     .refine((val) => !val || val.trim().length > 0, 'Message cannot be empty or only whitespace')
+    .optional()
 })
 
 // Sanitization functions

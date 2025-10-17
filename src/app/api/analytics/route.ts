@@ -4,7 +4,7 @@ import { ApiErrorHandler } from '@/lib/error-handler'
 import { requireAdmin } from '@/lib/auth'
 
 // Analytics service
-export class AnalyticsService {
+class AnalyticsService {
   static async getApplicationAnalytics() {
     const [
       totalApplications,

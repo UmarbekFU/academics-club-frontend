@@ -1,4 +1,5 @@
 // Re-export prisma from the centralized instance
+import { prisma } from './prisma'
 export { prisma } from './prisma'
 
 // Database optimization utilities

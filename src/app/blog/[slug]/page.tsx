@@ -44,7 +44,12 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
       },
     });
     
-    return blogPost;
+    if (!blogPost) return null;
+    
+    return {
+      ...blogPost,
+      createdAt: blogPost.createdAt.toISOString(),
+    };
   } catch (error) {
     console.error('Error fetching blog post:', error);
     return null;

@@ -75,8 +75,8 @@ function getClientIP(request: NextRequest): string {
     return realIP
   }
   
-  // Fallback to connection remote address
-  return request.ip || 'unknown'
+  // Fallback
+  return 'unknown'
 }
 
 // Cleanup expired entries periodically

@@ -7,7 +7,7 @@ import { blogPostSchema, updateBlogPostSchema } from '@/lib/validation'
 import { CacheInvalidation } from '@/lib/cache'
 
 // Content Management Service
-export class ContentManagementService {
+class ContentManagementService {
   // Blog Post Management
   static async createBlogPost(data: any) {
     try {

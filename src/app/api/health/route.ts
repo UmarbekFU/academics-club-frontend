@@ -67,7 +67,7 @@ interface SystemMetrics {
 }
 
 // Health check service
-export class HealthService {
+class HealthService {
   static async checkDatabase(): Promise<ServiceStatus> {
     const startTime = Date.now()
     
@@ -235,7 +235,7 @@ export class HealthService {
 }
 
 // Metrics service
-export class MetricsService {
+class MetricsService {
   static async getApplicationMetrics() {
     const [total, byStatus] = await Promise.all([
       prisma.application.count(),

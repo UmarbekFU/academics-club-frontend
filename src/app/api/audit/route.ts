@@ -20,7 +20,7 @@ interface AuditLogEntry {
 }
 
 // Audit log service
-export class AuditLogService {
+class AuditLogService {
   static async logAction(
     action: string,
     resource: string,
@@ -131,9 +131,17 @@ export class AuditLogService {
       ])
       
       // Parse details JSON
-      const parsedLogs = logs.map(log => ({
-        ...log,
+      const parsedLogs: AuditLogEntry[] = logs.map(log => ({
+        id: log.id,
+        action: log.action,
+        resource: log.resource,
+        resourceId: log.resourceId,
+        userId: log.userId,
+        userType: log.userType as 'admin' | 'user',
         details: JSON.parse(log.details),
+        ipAddress: log.ipAddress,
+        userAgent: log.userAgent,
+        timestamp: log.timestamp.toISOString(),
       }))
       
       return {
@@ -212,7 +220,10 @@ export class AuditLogService {
           acc[item.userId] = item._count.userId
           return acc
         }, {} as Record<string, number>),
-        recentActivity,
+        recentActivity: recentActivity.map(activity => ({
+          ...activity,
+          timestamp: activity.timestamp.toISOString(),
+        })),
       }
     } catch (error) {
       Logger.error('Failed to get audit stats', {}, error as Error)

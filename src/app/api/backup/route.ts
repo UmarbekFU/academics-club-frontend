@@ -28,7 +28,7 @@ const defaultBackupConfig: BackupConfig = {
 }
 
 // Backup service
-export class BackupService {
+class BackupService {
   private static config = defaultBackupConfig
   
   static configure(config: Partial<BackupConfig>): void {

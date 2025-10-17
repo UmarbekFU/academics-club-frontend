@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
     
     // In a real implementation, you would read the directory and return file list
     // For now, return a placeholder response
-    const files = [] // This would be populated by reading the upload directory
+    const files: string[] = [] // This would be populated by reading the upload directory
     
     return ApiErrorHandler.success(files, 'Files retrieved successfully')
   } catch (error) {

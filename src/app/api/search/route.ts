@@ -60,10 +60,10 @@ export async function GET(request: NextRequest) {
         where: {
           published: true,
           OR: [
-            { title: { contains: validatedData.query, mode: 'insensitive' } },
-            { content: { contains: validatedData.query, mode: 'insensitive' } },
-            { excerpt: { contains: validatedData.query, mode: 'insensitive' } },
-            { tags: { contains: validatedData.query, mode: 'insensitive' } },
+            { title: { contains: validatedData.query } },
+            { content: { contains: validatedData.query } },
+            { excerpt: { contains: validatedData.query } },
+            { tags: { contains: validatedData.query } },
           ],
         },
         select: {
@@ -94,9 +94,9 @@ export async function GET(request: NextRequest) {
         where: {
           active: true,
           OR: [
-            { title: { contains: validatedData.query, mode: 'insensitive' } },
-            { description: { contains: validatedData.query, mode: 'insensitive' } },
-            { type: { contains: validatedData.query, mode: 'insensitive' } },
+            { title: { contains: validatedData.query } },
+            { description: { contains: validatedData.query } },
+            { type: { contains: validatedData.query } },
           ],
         },
         select: {
@@ -123,9 +123,9 @@ export async function GET(request: NextRequest) {
         where: {
           active: true,
           OR: [
-            { name: { contains: validatedData.query, mode: 'insensitive' } },
-            { description: { contains: validatedData.query, mode: 'insensitive' } },
-            { content: { contains: validatedData.query, mode: 'insensitive' } },
+            { name: { contains: validatedData.query } },
+            { description: { contains: validatedData.query } },
+            { content: { contains: validatedData.query } },
           ],
         },
         select: {
@@ -152,9 +152,9 @@ export async function GET(request: NextRequest) {
         where: {
           active: true,
           OR: [
-            { name: { contains: validatedData.query, mode: 'insensitive' } },
-            { position: { contains: validatedData.query, mode: 'insensitive' } },
-            { bio: { contains: validatedData.query, mode: 'insensitive' } },
+            { name: { contains: validatedData.query } },
+            { position: { contains: validatedData.query } },
+            { bio: { contains: validatedData.query } },
           ],
         },
         select: {
@@ -181,10 +181,10 @@ export async function GET(request: NextRequest) {
         where: {
           published: true,
           OR: [
-            { title: { contains: validatedData.query, mode: 'insensitive' } },
-            { content: { contains: validatedData.query, mode: 'insensitive' } },
-            { excerpt: { contains: validatedData.query, mode: 'insensitive' } },
-            { tags: { contains: validatedData.query, mode: 'insensitive' } },
+            { title: { contains: validatedData.query } },
+            { content: { contains: validatedData.query } },
+            { excerpt: { contains: validatedData.query } },
+            { tags: { contains: validatedData.query } },
           ],
         },
       })
@@ -195,9 +195,9 @@ export async function GET(request: NextRequest) {
         where: {
           active: true,
           OR: [
-            { title: { contains: validatedData.query, mode: 'insensitive' } },
-            { description: { contains: validatedData.query, mode: 'insensitive' } },
-            { type: { contains: validatedData.query, mode: 'insensitive' } },
+            { title: { contains: validatedData.query } },
+            { description: { contains: validatedData.query } },
+            { type: { contains: validatedData.query } },
           ],
         },
       })
@@ -208,9 +208,9 @@ export async function GET(request: NextRequest) {
         where: {
           active: true,
           OR: [
-            { name: { contains: validatedData.query, mode: 'insensitive' } },
-            { description: { contains: validatedData.query, mode: 'insensitive' } },
-            { content: { contains: validatedData.query, mode: 'insensitive' } },
+            { name: { contains: validatedData.query } },
+            { description: { contains: validatedData.query } },
+            { content: { contains: validatedData.query } },
           ],
         },
       })
@@ -221,9 +221,9 @@ export async function GET(request: NextRequest) {
         where: {
           active: true,
           OR: [
-            { name: { contains: validatedData.query, mode: 'insensitive' } },
-            { position: { contains: validatedData.query, mode: 'insensitive' } },
-            { bio: { contains: validatedData.query, mode: 'insensitive' } },
+            { name: { contains: validatedData.query } },
+            { position: { contains: validatedData.query } },
+            { bio: { contains: validatedData.query } },
           ],
         },
       })
@@ -266,10 +266,10 @@ export async function POST(request: NextRequest) {
     const blogWhere: any = {
       published: true,
       OR: [
-        { title: { contains: query, mode: 'insensitive' } },
-        { content: { contains: query, mode: 'insensitive' } },
-        { excerpt: { contains: query, mode: 'insensitive' } },
-        { tags: { contains: query, mode: 'insensitive' } },
+        { title: { contains: query } },
+        { content: { contains: query } },
+        { excerpt: { contains: query } },
+        { tags: { contains: query } },
       ],
     }
     
